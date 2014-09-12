@@ -1,0 +1,9 @@
+{
+	"globalstrict": true,
+	"globals": {
+		"require": true,
+		"module": true,
+		"document": true,
+		"window": true
+	}
+}
