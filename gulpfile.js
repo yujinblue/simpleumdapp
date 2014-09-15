@@ -22,4 +22,6 @@ gulp.task('jshint', function () {
 
 gulp.task('test');
 
-gulp.task('default', ['browserify']);
+gulp.task('build', ['browserify']);
+
+gulp.task('default', ['build', 'test']);
