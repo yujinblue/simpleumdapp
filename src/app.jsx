@@ -6,7 +6,7 @@ var Welcome = React.createClass({
 	render: function() {
 		return <div>Hello {this.props.firstName} {this.props.lastName}</div>;
 	}
-})
+});
 
 module.exports = function(node) {
 	React.renderComponent(

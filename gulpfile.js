@@ -4,7 +4,8 @@ var gulp = require('gulp'),
 	jshint = require('gulp-jshint'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
-    rimraf = require('rimraf');
+    rimraf = require('rimraf'),
+    react = require('gulp-react');
 
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
@@ -20,7 +21,8 @@ gulp.task('browserify', ['jshint'], function () {
 });
 
 gulp.task('jshint', function () {
-	return gulp.src('./src/**/*.js')
+	return gulp.src(['./src/**/*.js', './src/**/*.jsx'])
+		.pipe(react())
 		.pipe(jshint('.jshintrc'))
 		.pipe(jshint.reporter('default'));
 });
