@@ -20,4 +20,6 @@ gulp.task('jshint', function () {
 		.pipe(jshint.reporter('default'));
 });
 
+gulp.task('test');
+
 gulp.task('default', ['browserify']);
