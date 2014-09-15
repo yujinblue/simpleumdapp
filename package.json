@@ -8,6 +8,7 @@
     "browserify": "^5.11.2",
     "gulp": "^3.8.8",
     "gulp-jshint": "^1.8.4",
+    "rimraf": "^2.2.8",
     "vinyl-source-stream": "^1.0.0"
   },
   "scripts": {
