@@ -11,8 +11,8 @@ gulp.task('clean', function(cb){
 });
 
 gulp.task('browserify', ['jshint'], function () {
-	var bundler = new browserify({ standalone: 'app.js' });
-	bundler.add('./src/app.js');
+	var bundler = new browserify({ standalone: 'app.jsx' });
+	bundler.add('./src/app.jsx');
 	return bundler
 		.bundle()
 		.pipe(source('app.js'))

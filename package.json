@@ -3,11 +3,14 @@
   "version": "0.0.1",
   "description": "Simple UMD app",
   "main": "src/main.js",
-  "dependencies": {},
+  "dependencies": {
+    "react": "^0.11.1"
+  },
   "devDependencies": {
     "browserify": "^5.11.2",
     "gulp": "^3.8.8",
     "gulp-jshint": "^1.8.4",
+    "reactify": "^0.14.0",
     "rimraf": "^2.2.8",
     "vinyl-source-stream": "^1.0.0"
   },
@@ -23,5 +26,10 @@
   "bugs": {
     "url": "https://github.com/cpacey/simpleumdapp/issues"
   },
-  "homepage": "https://github.com/cpacey/simpleumdapp"
+  "homepage": "https://github.com/cpacey/simpleumdapp",
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  }
 }
