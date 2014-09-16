@@ -48,7 +48,8 @@ gulp.task('publish-s3', function() {
 		"bucket": "simpleumdapp-gaudi"
 	};
 	var options = {
-		uploadPath: process.env.COMMIT_SHA
+		// Need the trailing slash, otherwise the SHA is prepended to the filename.
+		uploadPath: process.env.COMMIT_SHA + '/'
 	};
 	return gulp.src('./dist/**')
 		.pipe(s3(aws, options));
