@@ -6,7 +6,9 @@ var gulp = require('gulp'),
     source = require('vinyl-source-stream'),
     rimraf = require('rimraf'),
     react = require('gulp-react'),
-    s3 = require('gulp-s3');
+    s3 = require('gulp-s3'),
+    request = require('request'),
+    gutil = require('gulp-util');
 
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
@@ -53,4 +55,40 @@ gulp.task('publish-s3', function() {
 	};
 	return gulp.src('./dist/**')
 		.pipe(s3(aws, options));
+});
+
+gulp.task('update-github', function(cb) {
+	var githubUrl = 'https://api.github.com/repos/'
+				+ process.env.TRAVIS_REPO_SLUG
+				+ '/commits/'
+				+ process.env.COMMIT_SHA
+				+ '/comments';
+
+	var deploymentUrl =	'https://s3.amazonaws.com/simpleumdapp-gaudi/'
+				+ process.env.COMMIT_SHA
+				+ '/Host.html';
+
+	var options = {
+		url: githubUrl,
+		headers: {
+			'Authorization': 'token ' + process.env.GITHUB_TOKEN,
+			'User-Agent': 'cpacey'
+		},
+		json: {
+			'body': '[Deployment available online](' + deploymentUrl + ')'
+		}
+	};
+
+	request.post(options, function(error, response, body) {
+		if (error) {
+			gutil.log(gutil.colors.red('[FAILED]', error));
+		} else if ( response.statusCode != 201 ) {
+			gutil.log(gutil.colors.red(
+				'[FAILED]',
+				response.statusCode,
+				JSON.stringify(body)
+			));
+		}
+		cb();
+	});
 });

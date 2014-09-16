@@ -6,6 +6,9 @@ before_install:
 script:
   - gulp build
   - gulp publish-s3
+after_success:
+  - gulp update-github
 env:
   global:
-    secure: CzF6TS2ifMVu3qDRtxSUwTyWyw6apiHH8MGRI0WazNCQ9zGw2j1eNogFYETAAuD8tKstHkriNVWomV10e+Bpv09FZlSESJmcYXDu8AXpfwADykvQBhmkOjrhBjEONK02iLv8sgCAdRj86hwL7dLC99XMmc4Ch55bBZtf0ZM/Aw8=
+  - secure: CzF6TS2ifMVu3qDRtxSUwTyWyw6apiHH8MGRI0WazNCQ9zGw2j1eNogFYETAAuD8tKstHkriNVWomV10e+Bpv09FZlSESJmcYXDu8AXpfwADykvQBhmkOjrhBjEONK02iLv8sgCAdRj86hwL7dLC99XMmc4Ch55bBZtf0ZM/Aw8=
+  - secure: GJCbwYYhMRpxc8FhSUTrJeGiNoGaArNyXHfRAVMs8+da4YUDccyH0e/2BKq+6CwafIIbPker1Uh1scwTxZlwQ1flnJUQ591tDN+iTzRwfxuB2cDLdEIlgEzcGoZ3U5vY8kxM5h2RjQAFyhhUP5xC2Thc7bEh1Y5SKFe8bYDoOL4=

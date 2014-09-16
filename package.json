@@ -12,7 +12,9 @@
     "gulp-jshint": "^1.8.4",
     "gulp-react": "^1.0.1",
     "gulp-s3": "^0.3.0",
+    "gulp-util": "^3.0.1",
     "reactify": "^0.14.0",
+    "request": "^2.42.0",
     "rimraf": "^2.2.8",
     "vinyl-source-stream": "^1.0.0"
   },
