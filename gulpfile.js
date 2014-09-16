@@ -5,7 +5,8 @@ var gulp = require('gulp'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     rimraf = require('rimraf'),
-    react = require('gulp-react');
+    react = require('gulp-react'),
+    s3 = require('gulp-s3');
 
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
@@ -39,3 +40,16 @@ gulp.task('build', ['clean'], function() {
 });
 
 gulp.task('default', ['build', 'test']);
+
+gulp.task('publish-s3', function() {
+	var aws = {
+		"key": "AKIAJ5PPAPSA2QQHPAYA",
+		"secret": process.env.S3_SECRET,
+		"bucket": "simpleumdapp-gaudi"
+	};
+	var options = {
+		uploadPath: process.env.COMMIT_SHA
+	};
+	return gulp.src('./dist/**')
+		.pipe(s3(aws, options));
+});
