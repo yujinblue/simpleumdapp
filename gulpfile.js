@@ -58,11 +58,20 @@ gulp.task('publish-s3', function() {
 });
 
 gulp.task('update-github', function(cb) {
-	var githubUrl = 'https://api.github.com/repos/'
+	var githubUrl;
+	if (process.env.TRAVIS_PULL_REQUEST === 'false') {
+		githubUrl = 'https://api.github.com/repos/'
 				+ process.env.TRAVIS_REPO_SLUG
 				+ '/commits/'
 				+ process.env.COMMIT_SHA
 				+ '/comments';
+	} else {
+		githubUrl = 'https://api.github.com/repos/'
+				+ process.env.TRAVIS_REPO_SLUG
+				+ '/issues/'
+				+ process.env.TRAVIS_PULL_REQUEST
+				+ '/comments';
+	}
 
 	var deploymentUrl =	'https://s3.amazonaws.com/simpleumdapp-gaudi/'
 				+ process.env.COMMIT_SHA
