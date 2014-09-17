@@ -11,6 +11,9 @@ var gulp = require('gulp'),
     gutil = require('gulp-util'),
     streamifier = require('streamifier');
 
+var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
+	+ process.env.COMMIT_SHA;
+
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
 });
@@ -40,8 +43,7 @@ gulp.task('host-html', function() {
 gulp.task( 'appconfig', function( cb ) {
 
 	var argv = require('yargs')
-		.usage( 'Usage: gulp --target [target]')
-		.demand( ['target'] )
+		.default( 'target', defaultTarget )
 		.argv;
 
 	var pjson = require('./package.json');
@@ -105,9 +107,7 @@ gulp.task('update-github', function(cb) {
 				+ '/comments';
 	}
 
-	var deploymentUrl =	'https://s3.amazonaws.com/simpleumdapp-gaudi/'
-				+ process.env.COMMIT_SHA
-				+ '/Host.html';
+	var deploymentUrl =	defaultTarget + '/Host.html';
 
 	var options = {
 		url: githubUrl,
