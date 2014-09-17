@@ -6,8 +6,13 @@
 		<div id="appTarget"></div>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.js"></script>
 		<script>
+			define( 'd2l-orgunit', {
+				OrgId: 6606,
+				OrgUnitId: 6609
+			} );
+			require( ['d2l-orgunit'] );
+
 			require(['app.js'], function (install) {
-				console.log(install);
 				var container = document.getElementById('appTarget');
 				install(container);
 			});

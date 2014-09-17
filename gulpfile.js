@@ -8,7 +8,11 @@ var gulp = require('gulp'),
     react = require('gulp-react'),
     s3 = require('gulp-s3'),
     request = require('request'),
-    gutil = require('gulp-util');
+    gutil = require('gulp-util'),
+    streamifier = require('streamifier');
+
+var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
+	+ process.env.COMMIT_SHA;
 
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
@@ -16,6 +20,7 @@ gulp.task('clean', function(cb){
 
 gulp.task('browserify', ['jshint'], function () {
 	var bundler = new browserify({ standalone: 'app.jsx' });
+	bundler.external( 'd2l-orgunit' );
 	bundler.add('./src/app.jsx');
 	return bundler
 		.bundle()
@@ -35,10 +40,39 @@ gulp.task('host-html', function() {
 		.pipe(gulp.dest('dist'));
 });
 
+gulp.task( 'appconfig', function( cb ) {
+
+	var argv = require('yargs')
+		.default( 'target', defaultTarget )
+		.argv;
+
+	var pjson = require('./package.json');
+
+	var appconfig = {
+		"schema": "http://apps.d2l.com/uiapps/config/v1.json",
+		"metadata": {
+			"name": pjson.name,
+			"version": pjson.version,
+			"key": pjson.name,
+			"description": pjson.description
+		},
+		"loader": {
+			"schema": "http://apps.d2l.com/uiapps/umdschema/v1.json",
+			"endpoint": argv.target + "/app.js"
+		}
+	};
+
+	return streamifier
+		.createReadStream( JSON.stringify( appconfig, null, '\t' ) )
+		.pipe( source( 'appconfig.json' ) )
+		.pipe( gulp.dest( 'dist' ) );
+
+} );
+
 gulp.task('test');
 
 gulp.task('build', ['clean'], function() {
-	gulp.start('browserify', 'host-html');
+	gulp.start('browserify', 'host-html', 'appconfig');
 });
 
 gulp.task('default', ['build', 'test']);
@@ -73,9 +107,7 @@ gulp.task('update-github', function(cb) {
 				+ '/comments';
 	}
 
-	var deploymentUrl =	'https://s3.amazonaws.com/simpleumdapp-gaudi/'
-				+ process.env.COMMIT_SHA
-				+ '/Host.html';
+	var deploymentUrl =	defaultTarget + '/Host.html';
 
 	var options = {
 		url: githubUrl,
