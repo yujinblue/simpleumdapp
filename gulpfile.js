@@ -107,7 +107,7 @@ gulp.task('update-github', function(cb) {
 				+ '/comments';
 	}
 
-	var deploymentUrl =	defaultTarget + '/Host.html';
+	var deploymentUrl =	defaultTarget + '/appconfig.json';
 
 	var options = {
 		url: githubUrl,
