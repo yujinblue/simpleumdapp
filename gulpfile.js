@@ -35,11 +35,6 @@ gulp.task('jshint', function () {
 		.pipe(jshint.reporter('default'));
 });
 
-gulp.task('host-html', function() {
-	return gulp.src('Host.html')
-		.pipe(gulp.dest('dist'));
-});
-
 gulp.task( 'appconfig', function( cb ) {
 
 	var argv = require('yargs')
@@ -72,7 +67,7 @@ gulp.task( 'appconfig', function( cb ) {
 gulp.task('test');
 
 gulp.task('build', ['clean'], function() {
-	gulp.start('browserify', 'host-html', 'appconfig');
+	gulp.start('browserify', 'appconfig');
 });
 
 gulp.task('default', ['build', 'test']);
