@@ -64,13 +64,9 @@ gulp.task( 'appconfig', function( cb ) {
 
 } );
 
-gulp.task('test');
+gulp.task('build', ['browserify', 'appconfig']);
 
-gulp.task('build', ['clean'], function() {
-	gulp.start('browserify', 'appconfig');
-});
-
-gulp.task('default', ['build', 'test']);
+gulp.task('default', ['build']);
 
 gulp.task('publish-s3', function() {
 	var aws = {
