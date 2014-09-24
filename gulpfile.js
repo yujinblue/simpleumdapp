@@ -139,7 +139,7 @@ gulp.task('update-apporacle', function(cb) {
 	request.post(options, function(error, response, body) {
 		if (error) {
 			gutil.log(gutil.colors.red('[FAILED]', error));
-		} else if ( response.statusCode != 200 ) {
+		} else if ( response.statusCode != 201 ) {
 			gutil.log(gutil.colors.red(
 				'[FAILED]',
 				response.statusCode,
