@@ -8,6 +8,7 @@ script:
   - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp publish-s3'
 after_success:
   - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp update-github'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp update-apporacle'
 env:
   global:
   - secure: CzF6TS2ifMVu3qDRtxSUwTyWyw6apiHH8MGRI0WazNCQ9zGw2j1eNogFYETAAuD8tKstHkriNVWomV10e+Bpv09FZlSESJmcYXDu8AXpfwADykvQBhmkOjrhBjEONK02iLv8sgCAdRj86hwL7dLC99XMmc4Ch55bBZtf0ZM/Aw8=

@@ -82,6 +82,8 @@ gulp.task('publish-s3', function() {
 		.pipe(s3(aws, options));
 });
 
+var deploymentUrl =	defaultTarget + '/appconfig.json';
+
 gulp.task('update-github', function(cb) {
 	var githubUrl;
 	if (process.env.TRAVIS_PULL_REQUEST === 'false') {
@@ -98,8 +100,6 @@ gulp.task('update-github', function(cb) {
 				+ '/comments';
 	}
 
-	var deploymentUrl =	defaultTarget + '/appconfig.json';
-
 	var options = {
 		url: githubUrl,
 		headers: {
@@ -115,6 +115,31 @@ gulp.task('update-github', function(cb) {
 		if (error) {
 			gutil.log(gutil.colors.red('[FAILED]', error));
 		} else if ( response.statusCode != 201 ) {
+			gutil.log(gutil.colors.red(
+				'[FAILED]',
+				response.statusCode,
+				JSON.stringify(body)
+			));
+		}
+		cb();
+	});
+});
+
+gulp.task('update-apporacle', function(cb) {
+    var pjson = require('./package.json');
+
+	var options = {
+		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
+		json: {
+			'url': deploymentUrl,
+			'version': pjson.version + '-' + process.env.COMMIT_SHA
+		}
+	};
+
+	request.post(options, function(error, response, body) {
+		if (error) {
+			gutil.log(gutil.colors.red('[FAILED]', error));
+		} else if ( response.statusCode != 200 ) {
 			gutil.log(gutil.colors.red(
 				'[FAILED]',
 				response.statusCode,
