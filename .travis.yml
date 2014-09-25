@@ -4,6 +4,7 @@ node_js:
 before_install:
   - "export COMMIT_SHA=`git log -1 --pretty=format:%H`"
 script:
+  - gulp clean
   - gulp build
   - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp publish-s3'
 after_success:
