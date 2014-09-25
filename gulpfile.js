@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     s3 = require('gulp-s3'),
     request = require('request'),
     gutil = require('gulp-util'),
-    streamifier = require('streamifier');
+    streamifier = require('streamifier'),
+    pjson = require('./package.json');
 
 var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
 	+ process.env.COMMIT_SHA;
@@ -40,8 +41,6 @@ gulp.task( 'appconfig', function( cb ) {
 	var argv = require('yargs')
 		.default( 'target', defaultTarget )
 		.argv;
-
-	var pjson = require('./package.json');
 
 	var appconfig = {
 		"schema": "http://apps.d2l.com/uiapps/config/v1.json",
@@ -82,23 +81,20 @@ gulp.task('publish-s3', function() {
 		.pipe(s3(aws, options));
 });
 
-var deploymentUrl =	defaultTarget + '/appconfig.json';
+var configUrl = defaultTarget + '/appconfig.json';
+
+var devVersion = pjson.version + '-' + process.env.COMMIT_SHA;
 
 gulp.task('update-github', function(cb) {
-	var githubUrl;
-	if (process.env.TRAVIS_PULL_REQUEST === 'false') {
-		githubUrl = 'https://api.github.com/repos/'
+	var githubUrl = 'https://api.github.com/repos/'
 				+ process.env.TRAVIS_REPO_SLUG
 				+ '/commits/'
 				+ process.env.COMMIT_SHA
 				+ '/comments';
-	} else {
-		githubUrl = 'https://api.github.com/repos/'
-				+ process.env.TRAVIS_REPO_SLUG
-				+ '/issues/'
-				+ process.env.TRAVIS_PULL_REQUEST
-				+ '/comments';
-	}
+
+	var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
+		+ 'key=' + pjson.name
+		+ 'version=' + devVersion;
 
 	var options = {
 		url: githubUrl,
@@ -107,7 +103,7 @@ gulp.task('update-github', function(cb) {
 			'User-Agent': 'cpacey'
 		},
 		json: {
-			'body': '[Deployment available online](' + deploymentUrl + ')'
+			'body': '[View on AppOracle](' + linkUrl + ')'
 		}
 	};
 
@@ -126,13 +122,11 @@ gulp.task('update-github', function(cb) {
 });
 
 gulp.task('update-apporacle', function(cb) {
-    var pjson = require('./package.json');
-
 	var options = {
 		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
 		json: {
-			'url': deploymentUrl,
-			'version': pjson.version + '-' + process.env.COMMIT_SHA
+			'url': configUrl,
+			'version': devVersion
 		}
 	};
 
