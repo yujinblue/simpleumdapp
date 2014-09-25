@@ -94,7 +94,7 @@ gulp.task('update-github', function(cb) {
 
 	var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
 		+ 'key=' + pjson.name
-		+ 'version=' + devVersion;
+		+ '&version=' + devVersion;
 
 	var options = {
 		url: githubUrl,
