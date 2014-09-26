@@ -8,7 +8,7 @@ var Welcome = React.createClass({
 		return <div>
 			<div>Hello {this.props.firstName} {this.props.lastName}!</div>
 			<div>Welcome to org-unit <b>{orgUnit.OrgUnitId}</b>.</div>
-			<img src="/d2l/lp/ouHome/defaultHome.d2l" />
+			<img src="/d2l/common/files/platform/navbar/logo_slim.png" />
 		</div>;
 	}
 });
