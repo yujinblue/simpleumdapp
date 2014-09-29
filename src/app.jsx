@@ -7,7 +7,7 @@ var Welcome = React.createClass({
 	render: function() {
 		return <div>
 			<div>Hello {this.props.firstName} {this.props.lastName}!</div>
-			<div>Welcome to org-unit <b>{orgUnit.OrgUnitId}</b>.</div>
+			<div>You are in orgUnit <b>{orgUnit.OrgUnitId}</b>.</div>
 			<img src="/d2l/common/files/platform/navbar/logo_slim.png" />
 		</div>;
 	}
@@ -15,7 +15,7 @@ var Welcome = React.createClass({
 
 module.exports = function(node) {
 	React.renderComponent(
-		<Welcome firstName="Barb" lastName="Toofar"/>,
+		<Welcome firstName="Srdjan" lastName="Majkic"/>,
 		node
 	);
 };
