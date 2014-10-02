@@ -9,24 +9,34 @@ var gulp = require('gulp'),
     s3 = require('gulp-s3'),
     request = require('request'),
     gutil = require('gulp-util'),
-    streamifier = require('streamifier'),
-    pjson = require('./package.json');
+    watchify = require('watchify'),
+    localAppResolver = require('./localAppResolver')(),
+    appConfigBuilder = require('./umdAppConfigBuilder');
 
 var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
 	+ process.env.COMMIT_SHA;
+
+var argv = require('yargs').default( 'target', defaultTarget ).argv;
 
 gulp.task('clean', function(cb){
     rimraf('dist', cb);
 });
 
-gulp.task('browserify', ['jshint'], function () {
+function getBundler() {
 	var bundler = new browserify({ standalone: 'app.jsx' });
 	bundler.external( 'd2l-orgunit' );
 	bundler.add('./src/app.jsx');
-	return bundler
-		.bundle()
+	return bundler;
+}
+
+function bundle(bundler) {
+	return bundler.bundle()
 		.pipe(source('app.js'))
         .pipe(gulp.dest('dist'));
+};
+
+gulp.task('browserify', ['jshint'], function () {
+	return bundle(getBundler());
 });
 
 gulp.task('jshint', function () {
@@ -36,36 +46,33 @@ gulp.task('jshint', function () {
 		.pipe(jshint.reporter('default'));
 });
 
-gulp.task( 'appconfig', function( cb ) {
-
-	var argv = require('yargs')
-		.default( 'target', defaultTarget )
-		.argv;
-
-	var appconfig = {
-		"schema": "http://apps.d2l.com/uiapps/config/v1.json",
-		"metadata": {
-			"name": pjson.name,
-			"version": pjson.version,
-			"key": pjson.name,
-			"description": pjson.description
-		},
-		"loader": {
-			"schema": "http://apps.d2l.com/uiapps/umdschema/v1.json",
-			"endpoint": argv.target + "/app.js"
-		}
-	};
-
-	return streamifier
-		.createReadStream( JSON.stringify( appconfig, null, '\t' ) )
-		.pipe( source( 'appconfig.json' ) )
+function makeAppConfig(target) {
+	return appConfigBuilder.buildStream(target)
 		.pipe( gulp.dest( 'dist' ) );
+}
 
-} );
+gulp.task( 'appconfig-s3', function() {
+	return makeAppConfig(argv.target);
+});
 
-gulp.task('build', ['browserify', 'appconfig']);
+gulp.task( 'appconfig-local', function() {
+	return makeAppConfig(localAppResolver.getUrl());
+});
 
-gulp.task('default', ['build']);
+gulp.task('browserify-watch', function(){
+	var bundler = watchify(getBundler());
+	bundler.on('update', function() {
+		gulp.start('browserify');
+	});
+	return bundle(bundler);
+});
+
+gulp.task('local', ['browserify-watch', 'appconfig-local'], function() {
+	gulp.watch('package.json', ['appconfig-local']);
+	localAppResolver.host();
+});
+
+gulp.task('build', ['browserify', 'appconfig-s3']);
 
 gulp.task('publish-s3', function() {
 	var aws = {
@@ -81,9 +88,10 @@ gulp.task('publish-s3', function() {
 		.pipe(s3(aws, options));
 });
 
-var configUrl = defaultTarget + '/appconfig.json';
-
-var devVersion = pjson.version + '-' + process.env.COMMIT_SHA;
+function getDevVersion() {
+	var pjson = require('./package.json')
+	return pjson.version + '-' + process.env.COMMIT_SHA;
+}
 
 gulp.task('update-github', function(cb) {
 	var githubUrl = 'https://api.github.com/repos/'
@@ -94,7 +102,7 @@ gulp.task('update-github', function(cb) {
 
 	var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
 		+ 'key=' + pjson.name
-		+ '&version=' + devVersion;
+		+ '&version=' + getDevVersion();
 
 	var options = {
 		url: githubUrl,
@@ -122,11 +130,13 @@ gulp.task('update-github', function(cb) {
 });
 
 gulp.task('update-apporacle', function(cb) {
+	var pjson = require('./package.json')
+
 	var options = {
 		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
 		json: {
-			'url': configUrl,
-			'version': devVersion
+			'url': defaultTarget + '/appconfig.json',
+			'version': getDevVersion()
 		}
 	};
 
