@@ -89,11 +89,13 @@ gulp.task('publish-s3', function() {
 });
 
 function getDevVersion() {
-	var pjson = require('./package.json')
+	var pjson = require('./package.json');
 	return pjson.version + '-' + process.env.COMMIT_SHA;
 }
 
 gulp.task('update-github', function(cb) {
+	var pjson = require('./package.json');
+
 	var githubUrl = 'https://api.github.com/repos/'
 				+ process.env.TRAVIS_REPO_SLUG
 				+ '/commits/'
@@ -130,7 +132,7 @@ gulp.task('update-github', function(cb) {
 });
 
 gulp.task('update-apporacle', function(cb) {
-	var pjson = require('./package.json')
+	var pjson = require('./package.json');
 
 	var options = {
 		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
