@@ -15,7 +15,7 @@ var Welcome = React.createClass({
 
 module.exports = function(node) {
 	React.renderComponent(
-		<Welcome firstName="Srdjan" lastName="Majkic"/>,
+		<Welcome firstName="Daryl" lastName="McMillan"/>,
 		node
 	);
 };
