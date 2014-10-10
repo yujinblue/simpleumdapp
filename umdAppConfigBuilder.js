@@ -21,7 +21,7 @@ function build(target, opts) {
         "metadata": {
             "name": pjson.name,
             "version": pjson.version,
-            "key": pjson.name,
+            "id": pjson.name,
             "description": pjson.description
         },
         "loader": {
