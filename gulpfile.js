@@ -7,6 +7,7 @@ var gulp = require('gulp'),
     rimraf = require('rimraf'),
     react = require('gulp-react'),
     s3 = require('gulp-s3'),
+	pg = require('peanut-gallery'),
     request = require('request'),
     gutil = require('gulp-util'),
     watchify = require('watchify'),
@@ -74,62 +75,41 @@ gulp.task('local', ['browserify-watch', 'appconfig-local'], function() {
 
 gulp.task('build', ['browserify', 'appconfig-s3']);
 
-gulp.task('publish-s3', function() {
+gulp.task('publish-s3', function( cb ) {
+
 	var aws = {
-		"key": "AKIAJ5PPAPSA2QQHPAYA",
-		"secret": process.env.S3_SECRET,
-		"bucket": "simpleumdapp-gaudi"
-	};
+			"key": "AKIAJ5PPAPSA2QQHPAYA",
+			"secret": process.env.S3_SECRET,
+			"bucket": "simpleumdapp-gaudi"
+		};
 	var options = {
-		// Need the trailing slash, otherwise the SHA is prepended to the filename.
-		uploadPath: process.env.COMMIT_SHA + '/'
-	};
-	return gulp.src('./dist/**')
-		.pipe(s3(aws, options));
+			// Need the trailing slash, otherwise the SHA is prepended to the filename.
+			uploadPath: process.env.COMMIT_SHA + '/'
+		};
+
+	gulp.src('./dist/**')
+		.pipe( s3( aws, options ) )
+		.on( 'end', function() {
+
+			var pjson = require('./package.json');
+			var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
+				+ 'key=' + pjson.name
+				+ '&version=' + getDevVersion();
+			var message = '[View on AppOracle](' + linkUrl + ')';
+
+			pg.comment( message, {}, function( error, response ) {
+				if( error )
+					gutil.log( gutil.colors.red( '[FAILED]', JSON.stringify( error ) ) );
+				cb();
+			} );
+
+		} );
 });
 
 function getDevVersion() {
 	var pjson = require('./package.json');
 	return pjson.version + '-' + process.env.COMMIT_SHA;
 }
-
-gulp.task('update-github', function(cb) {
-	var pjson = require('./package.json');
-
-	var githubUrl = 'https://api.github.com/repos/'
-				+ process.env.TRAVIS_REPO_SLUG
-				+ '/commits/'
-				+ process.env.COMMIT_SHA
-				+ '/comments';
-
-	var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
-		+ 'key=' + pjson.name
-		+ '&version=' + getDevVersion();
-
-	var options = {
-		url: githubUrl,
-		headers: {
-			'Authorization': 'token ' + process.env.GITHUB_TOKEN,
-			'User-Agent': 'cpacey'
-		},
-		json: {
-			'body': '[View on AppOracle](' + linkUrl + ')'
-		}
-	};
-
-	request.post(options, function(error, response, body) {
-		if (error) {
-			gutil.log(gutil.colors.red('[FAILED]', error));
-		} else if ( response.statusCode != 201 ) {
-			gutil.log(gutil.colors.red(
-				'[FAILED]',
-				response.statusCode,
-				JSON.stringify(body)
-			));
-		}
-		cb();
-	});
-});
 
 gulp.task('update-apporacle', function(cb) {
 	var pjson = require('./package.json');

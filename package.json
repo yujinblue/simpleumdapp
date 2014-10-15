@@ -14,6 +14,7 @@
     "gulp-react": "^1.0.1",
     "gulp-s3": "^0.3.0",
     "gulp-util": "^3.0.1",
+    "peanut-gallery": "^0.0.3",
     "reactify": "^0.14.0",
     "request": "^2.42.0",
     "rimraf": "^2.2.8",
