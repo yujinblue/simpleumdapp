@@ -10,8 +10,8 @@ var gulp = require('gulp'),
     request = require('request'),
     gutil = require('gulp-util'),
     watchify = require('watchify'),
-    localAppResolver = require('./localAppResolver')(),
-    appConfigBuilder = require('./umdAppConfigBuilder');
+    frau = require('free-range-app-utils'),
+    localAppResolver = frau.localAppResolver();
 
 var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
 	+ process.env.COMMIT_SHA;
@@ -47,7 +47,7 @@ gulp.task('jshint', function () {
 });
 
 function makeAppConfig(target) {
-	return appConfigBuilder.buildStream(target)
+	return frau.appConfigBuilder.buildStream(target)
 		.pipe( gulp.dest( 'dist' ) );
 }
 
