@@ -62,7 +62,7 @@ gulp.task( 'appconfig-local', function() {
 gulp.task('browserify-watch', function(){
 	var bundler = watchify(getBundler());
 	bundler.on('update', function() {
-		gulp.start('browserify');
+		gulp.start('browserify-watch');
 	});
 	return bundle(bundler);
 });
