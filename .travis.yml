@@ -5,9 +5,8 @@ before_install:
   - "export COMMIT_SHA=`git log -1 --pretty=format:%H`"
 script:
   - gulp build
-  - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp publish-s3'
 after_success:
-  - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp update-github'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp publish-s3'
   - '[ "$TRAVIS_SECURE_ENV_VARS" = "true" ] && gulp update-apporacle'
 env:
   global:
