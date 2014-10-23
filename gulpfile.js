@@ -12,7 +12,8 @@ var gulp = require('gulp'),
     gutil = require('gulp-util'),
     watchify = require('watchify'),
     frau = require('free-range-app-utils'),
-    localAppResolver = frau.localAppResolver();
+    localAppResolver = frau.localAppResolver(),
+    publisher = require('./publisher');
 
 var defaultTarget = 'https://s3.amazonaws.com/simpleumdapp-gaudi/'
 	+ process.env.COMMIT_SHA;
@@ -78,32 +79,30 @@ gulp.task('build', ['browserify', 'appconfig-s3']);
 gulp.task('publish-s3', function( cb ) {
 
 	var aws = {
-			"key": "AKIAJ5PPAPSA2QQHPAYA",
-			"secret": process.env.S3_SECRET,
-			"bucket": "simpleumdapp-gaudi"
-		};
+		"key": "AKIAJJTADL5PBDDLOQGA",
+		"secret": "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",
+		"bucket": "gaudi-cdn-test"
+	};
+
 	var options = {
-			// Need the trailing slash, otherwise the SHA is prepended to the filename.
-			uploadPath: process.env.COMMIT_SHA + '/'
-		};
+		// Need the trailing slash, otherwise the SHA is prepended to the filename.
+		uploadPath: "apps/simpleumdapp/test2/"
+	};
 
-	gulp.src('./dist/**')
-		.pipe( s3( aws, options ) )
-		.on( 'end', function() {
+	publisher(aws, options, cb);
 
-			var pjson = require('./package.json');
-			var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
-				+ 'key=' + pjson.name
-				+ '&version=' + getDevVersion();
-			var message = '[View on AppOracle](' + linkUrl + ')';
+	// var aws = publisher;
 
-			pg.comment( message, {}, function( error, response ) {
-				if( error )
-					gutil.log( gutil.colors.red( '[FAILED]', JSON.stringify( error ) ) );
-				cb();
-			} );
+	
+	// console.log(options);
 
-		} );
+	// gulp.src('./dist/**')
+	// 	.pipe( s3( aws, options ) )
+	// 	.on( 'end', function() {
+
+			
+
+	// 	} );
 });
 
 function getDevVersion() {
