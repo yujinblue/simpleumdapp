@@ -78,9 +78,9 @@ gulp.task('build', ['browserify', 'appconfig-s3']);
 
 gulp.task('publish-s3', function( cb ) {
 	var pjson = require('./package.json');
-	var dist = './dist/';
-	var filelist = ['pooh.json', 'piglet.json'];
-	publisher(pjson.name, pjson.version, dist, filelist)
+	var dist = './dist/p**.json';
+	gulp.src(dist).
+	pipe( publisher(pjson.name, pjson.version) )
 		.on( 'end', function() {
 
 			var pjson = require('./package.json');
