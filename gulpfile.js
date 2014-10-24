@@ -77,32 +77,25 @@ gulp.task('local', ['browserify-watch', 'appconfig-local'], function() {
 gulp.task('build', ['browserify', 'appconfig-s3']);
 
 gulp.task('publish-s3', function( cb ) {
+	var pjson = require('./package.json');
+	var dist = './dist/';
+	var filelist = ['pooh.json', 'piglet.json'];
+	publisher(pjson.name, pjson.version, dist, filelist)
+		.on( 'end', function() {
 
-	var aws = {
-		"key": "AKIAJJTADL5PBDDLOQGA",
-		"secret": "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",
-		"bucket": "gaudi-cdn-test"
-	};
+			var pjson = require('./package.json');
+			var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
+				+ 'key=' + pjson.name
+				+ '&version=' + getDevVersion();
+			var message = '[View on AppOracle](' + linkUrl + ')';
 
-	var options = {
-		// Need the trailing slash, otherwise the SHA is prepended to the filename.
-		uploadPath: "apps/simpleumdapp/test2/"
-	};
+			pg.comment( message, {}, function( error, response ) {
+				if( error )
+					gutil.log( gutil.colors.yellow( 'PEANUT[FAILED]', JSON.stringify( error ) ) );
+				cb();
+			} );
 
-	publisher(aws, options, cb);
-
-	// var aws = publisher;
-
-	
-	// console.log(options);
-
-	// gulp.src('./dist/**')
-	// 	.pipe( s3( aws, options ) )
-	// 	.on( 'end', function() {
-
-			
-
-	// 	} );
+		} );
 });
 
 function getDevVersion() {
