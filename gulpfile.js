@@ -91,11 +91,8 @@ gulp.task('publish-s3', function( cb ) {
 		.pipe( s3( aws, options ) )
 		.on( 'end', function() {
 
-			var pjson = require('./package.json');
-			var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
-				+ 'key=' + pjson.name
-				+ '&version=' + getDevVersion();
-			var message = '[View on AppOracle](' + linkUrl + ')';
+			var linkUrl = defaultTarget + '/appconfig.json';
+			var message = '[View appconfig.json online](' + linkUrl + ')';
 
 			pg.comment( message, {}, function( error, response ) {
 				if( error )
