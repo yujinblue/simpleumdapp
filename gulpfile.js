@@ -110,28 +110,3 @@ function getDevVersion() {
 	var pjson = require('./package.json');
 	return pjson.version + '-' + process.env.COMMIT_SHA;
 }
-
-gulp.task('update-apporacle', function(cb) {
-	var pjson = require('./package.json');
-
-	var options = {
-		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
-		json: {
-			'url': defaultTarget + '/appconfig.json',
-			'version': getDevVersion()
-		}
-	};
-
-	request.post(options, function(error, response, body) {
-		if (error) {
-			gutil.log(gutil.colors.red('[FAILED]', error));
-		} else if ( response.statusCode != 201 ) {
-			gutil.log(gutil.colors.red(
-				'[FAILED]',
-				response.statusCode,
-				JSON.stringify(body)
-			));
-		}
-		cb();
-	});
-});
