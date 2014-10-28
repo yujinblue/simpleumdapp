@@ -99,7 +99,7 @@ gulp.task('publish-s3', function( cb ) {
 
 			pg.comment( message, {}, function( error, response ) {
 				if( error )
-					gutil.log( gutil.colors.red( '[FAILED]', JSON.stringify( error ) ) );
+					gutil.log( gutil.colors.red( '[FAILED] commenting', JSON.stringify( error ) ) );
 				cb();
 			} );
 
