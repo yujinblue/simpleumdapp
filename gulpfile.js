@@ -91,15 +91,12 @@ gulp.task('publish-s3', function( cb ) {
 		.pipe( s3( aws, options ) )
 		.on( 'end', function() {
 
-			var pjson = require('./package.json');
-			var linkUrl = 'https://s3.amazonaws.com/apporacle-ui-dev/Version.html?'
-				+ 'key=' + pjson.name
-				+ '&version=' + getDevVersion();
-			var message = '[View on AppOracle](' + linkUrl + ')';
+			var linkUrl = defaultTarget + '/appconfig.json';
+			var message = '[View appconfig.json online](' + linkUrl + ')';
 
 			pg.comment( message, {}, function( error, response ) {
 				if( error )
-					gutil.log( gutil.colors.red( '[FAILED]', JSON.stringify( error ) ) );
+					gutil.log( gutil.colors.red( '[FAILED] commenting', JSON.stringify( error ) ) );
 				cb();
 			} );
 
@@ -110,28 +107,3 @@ function getDevVersion() {
 	var pjson = require('./package.json');
 	return pjson.version + '-' + process.env.COMMIT_SHA;
 }
-
-gulp.task('update-apporacle', function(cb) {
-	var pjson = require('./package.json');
-
-	var options = {
-		url: 'http://apporacle-dev.elasticbeanstalk.com/apps/' + pjson.name,
-		json: {
-			'url': defaultTarget + '/appconfig.json',
-			'version': getDevVersion()
-		}
-	};
-
-	request.post(options, function(error, response, body) {
-		if (error) {
-			gutil.log(gutil.colors.red('[FAILED]', error));
-		} else if ( response.statusCode != 201 ) {
-			gutil.log(gutil.colors.red(
-				'[FAILED]',
-				response.statusCode,
-				JSON.stringify(body)
-			));
-		}
-		cb();
-	});
-});
